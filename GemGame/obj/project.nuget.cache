@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "cPu0qECT6jyBfBiiVZFwweMjunKOt7F0bst2uusyWdAHZgaxjHZ23Bephi1677K2NUefgbRpOhvtq17ggk1XvA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Shadow\\source\\repos\\GemGame\\GemGame\\GemGame.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Shadow\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
