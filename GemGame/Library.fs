@@ -3,8 +3,8 @@
 module Domain =
     type Undefined = exn
     
-    type Row = uint8
-    type Column = uint8
+    type Row = uint
+    type Column = uint
     type GemColor = Undefined
     type Flavor = Empty | Color of GemColor
 
@@ -28,4 +28,8 @@ module Domain =
 
     type SwapTiles = Board -> Position -> Position -> SwapResult
 
-
+    let swapTiles : SwapTiles =
+        fun board ->
+            fun position ->
+                fun position ->
+                    Unswappable
