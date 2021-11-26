@@ -1,24 +1,29 @@
 ﻿namespace GemGame
 
-open System.Drawing
-
 module Domain =
 
     type Undefined = exn
 
-    type Row = uint8
+    type Row = int
 
-    type Column = uint8
+    type Column = int
 
-    type GemColor = Undefined
+//    type GemColor = Undefined
 
-    type Flavor = Red | Green | Blue
+    type Flavor =
+        | Red
+        | Green
+        | Blue
 
     type Position = Row * Column
 
-    type Tile = EmptyTile | Occupied of Flavor
+    type Tile =
+        | EmptyTile
+        | Occupied of Flavor
 
-    type Board = EmptyBoard | Tiles of Tile [,]
+    type Board =
+        | EmptyBoard
+        | Tiles of Tile [,]
 
     type SwapMatch =
         | Line of Tile * Tile * Tile
@@ -31,6 +36,9 @@ module Domain =
         | RowOutOfRange
         | ColumnOutOfRange
         | Success of SwapMatch * Board
+    
+    type FillBoardFailure = Undefined
+    type FillBoardResult = Result<Board, FillBoardFailure>
 
 module Workflow =
     open Domain
@@ -38,18 +46,21 @@ module Workflow =
     type GenerateBoard = Row -> Column -> Board
 
     type SwapTiles = Board -> Position -> Position -> SwapResult
+    
+    type FillGem = Board -> Flavor -> Position -> FillBoardResult
 
 module API =
     open Domain
     open Workflow
 
     let generateBoard: GenerateBoard =
-        fun rows column -> Tiles (Array2D.create (int rows) (int column) EmptyTile)
+        fun rows column -> Tiles(Array2D.create (int rows) (int column) EmptyTile)
+
     let swapTiles: SwapTiles =
         fun board position1 position2 ->
             match (board, position1, position2) with
             | EmptyBoard, _, _ -> Unswappable
-            | Tiles tileArray, (row1, _), (row2, _)
-                when (int row1) > Array2D.length1 tileArray
-                || (int row2) > Array2D.length1 tileArray -> RowOutOfRange
+            | Tiles tileArray, (row1, _), (row2, _) when (int row1) > Array2D.length1 tileArray
+                                                         || (int row2) > Array2D.length1 tileArray -> RowOutOfRange
             | _, _, _ -> ColumnOutOfRange
+
