@@ -5,27 +5,87 @@ open GemGame.Domain
 open GemGame.API
 open FsUnit
 
+let bind switchFunction = 
+    fun twoTrackInput -> 
+        match twoTrackInput with
+        | Ok s -> switchFunction s
+        | Error f -> Error f
+
+let switch f x = 
+    f x |> Ok
+
+let map oneTrackFunction twoTrackInput = 
+    match twoTrackInput with
+    | Ok s -> Ok (oneTrackFunction s)
+    | Error f -> Error f
+
+let private pretty x = sprintf "%A" x
+
+let shouldBe (expected:'a) (actual:'a) = 
+    if expected <> actual then 
+        raise (Xunit.Sdk.EqualException(pretty expected, pretty actual))
+
 [<Fact>]
 let ``Swap tiles on Empty Board is always unswappable``() =
-    swapTiles EmptyBoard (1, 1) (1, 2) |> should equal Unswappable
+    let board = generateBoard 8 8
+    let expectedError = Error (SwapError Unswappable)
+    swapTiles (1, 1) (1, 2) board |> shouldBe expectedError
+
 
 [<Fact>]
 let ``Impossible to swap tiles when row is out of board range``() =
-    let swapTilesOnBoard8x8 = generateBoard 8 8 |> swapTiles
-    swapTilesOnBoard8x8 (10, 1) (1, 2) |> should equal RowOutOfRange
-    swapTilesOnBoard8x8 (1, 1) (10, 2) |> should equal RowOutOfRange
+    let board = generateBoard 8 8
+                    |> fillGem Red (1,1)
+    let expectedError = Error (SwapError RowOutOfRange)
+    bind (swapTiles (10, 1) (1, 2)) board
+        |> shouldBe expectedError
+    bind (swapTiles  (1, 1) (10, 2)) board
+        |> shouldBe expectedError
 
 
 [<Fact>]
 let ``Impossible to swap tiles when column is out of board range``() =
-    let swapTilesOnBoard8x8 = generateBoard 8 8 |> swapTiles
-    swapTilesOnBoard8x8 (1, 10) (1, 2) |> should equal ColumnOutOfRange
-    swapTilesOnBoard8x8 (1, 1) (1, 20) |> should equal ColumnOutOfRange
+    let board = generateBoard 8 8
+                |> fillGem Red (1,1)
+    let swapper = fun r c rb ->
+        match rb with
+        | Error e -> Error e
+        | Ok b -> swapTiles r c b
+    let expectedError = Error (SwapError ColumnOutOfRange)
+    swapper (1, 10) (1, 2) board
+        |> shouldBe expectedError
+    swapper (1, 1) (1, 20) board
+        |> shouldBe expectedError
+
+
+[<Fact>]
+let ``Empty board has no Tile``() =
+    let board = generateBoard 8 8
+    countFilledTiles board
+        |> shouldBe (Ok 0)
+
+[<Fact>]
+let ``Board with one more Tile has one Tile``() =
+    let board = generateBoard 8 8
+    fillGem Red (1, 1) board
+        |> bind countFilledTiles
+        |> shouldBe (Ok 1)
+        
+[<Fact>]
+let ``Board with two Tiles counts two Tiles``() =
+    let board = generateBoard 8 8
+    fillGem Red (1, 1) board
+        |> fillGemResult Red (1, 2)
+        |> bind countFilledTiles
+        |> shouldBe (Ok 2)
 
 //[<Fact>]
 //let ``Empty board can be filled with two gems on two different tiles``() =
-//    let board = generateBoard 8uy 8uy
-//    let gem1 = 
+//    let board = generateBoard 8 8
+//    let boardWith1Gem = 
+//    countGems boardWith1Gem
+//        |> should equal 1
+
 
 //[<Fact>]
 //let ``Impossible to swap with an empty tile``() =
