@@ -18,7 +18,11 @@ let map oneTrackFunction twoTrackInput =
     match twoTrackInput with
     | Ok s -> Ok (oneTrackFunction s)
     | Error f -> Error f
-
+let map3rd: ('a -> 'b -> 'c ->  Result<'d, 'e>) -> 'a -> 'b -> Result<'c, 'e> -> Result<'d, 'e> =
+        fun oneTrackFunction a b resultParam ->
+            match resultParam with
+            | Error e -> Error e
+            | Ok okUnboxed -> oneTrackFunction a b okUnboxed
 let private pretty x = sprintf "%A" x
 
 let shouldBe (expected:'a) (actual:'a) = 
@@ -47,15 +51,10 @@ let ``Impossible to swap tiles when row is out of board range``() =
 let ``Impossible to swap tiles when column is out of board range``() =
     let board = generateBoard 8 8
                 |> fillGem Red (1,1)
-    let swapper = fun r c rb ->
-        match rb with
-        | Error e -> Error e
-        | Ok b -> swapTiles r c b
-    let expectedError = Error (SwapError ColumnOutOfRange)
-    swapper (1, 10) (1, 2) board
-        |> shouldBe expectedError
-    swapper (1, 1) (1, 20) board
-        |> shouldBe expectedError
+    map3rd swapTiles (1, 10) (1, 2) board
+        |> shouldBe (Error (SwapError ColumnOutOfRange))
+    map3rd swapTiles (1, 1) (1, 20) board
+        |> shouldBe (Error (SwapError ColumnOutOfRange))
 
 
 [<Fact>]
@@ -75,7 +74,7 @@ let ``Board with one more Tile has one Tile``() =
 let ``Board with two Tiles counts two Tiles``() =
     let board = generateBoard 8 8
     fillGem Red (1, 1) board
-        |> fillGemResult Red (1, 2)
+        |> map3rd fillGem Red (1, 2)
         |> bind countFilledTiles
         |> shouldBe (Ok 2)
 
