@@ -1,22 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="Library.fs" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Domain.fs"/>
+        <Compile Include="Workflow.fs"/>
+        <Compile Include="API.fs"/>
+        <Compile Include="Library.fs"/>
+        <Compile Include="Railway.fs"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FsUnit" Version="4.1.0">
-      <GeneratePathProperty></GeneratePathProperty>
-    </PackageReference>
-    <PackageReference Include="FsUnit.xUnit" Version="4.1.0">
-      <GeneratePathProperty></GeneratePathProperty>
-    </PackageReference>
-    <PackageReference Include="FSharp.Core" Version="6.0.1">
-      <GeneratePathProperty></GeneratePathProperty>
-    </PackageReference>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="FsUnit" Version="4.1.0">
+            <GeneratePathProperty></GeneratePathProperty>
+        </PackageReference>
+        <PackageReference Include="FsUnit.xUnit" Version="4.1.0">
+            <GeneratePathProperty></GeneratePathProperty>
+        </PackageReference>
+        <PackageReference Include="FSharp.Core" Version="6.0.1">
+            <GeneratePathProperty></GeneratePathProperty>
+        </PackageReference>
+    </ItemGroup>
 </Project>

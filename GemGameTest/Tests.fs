@@ -1,36 +1,12 @@
 ﻿module GemGameTest.Tests
 
-module Matcher =
-    let private pretty x = $"%A{x}"
-    let shouldBe (expected: 'a) (actual: 'a) =
-        if expected <> actual then
-            raise (Xunit.Sdk.EqualException(pretty expected, pretty actual))
-
-module Railway =
-    let bind switchFunction =
-        fun twoTrackInput ->
-            match twoTrackInput with
-            | Ok s -> switchFunction s
-            | Error f -> Error f
-
-    let switch f x = f x |> Ok
-
-    let map oneTrackFunction twoTrackInput =
-        match twoTrackInput with
-        | Ok s -> Ok(oneTrackFunction s)
-        | Error f -> Error f
-
-    let map3rd: ('a -> 'b -> 'c -> Result<'d, 'e>) -> 'a -> 'b -> Result<'c, 'e> -> Result<'d, 'e> =
-        fun oneTrackFunction a b resultParam ->
-            match resultParam with
-            | Error e -> Error e
-            | Ok okUnboxed -> oneTrackFunction a b okUnboxed
 
 open Xunit
 open GemGame.Domain
 open GemGame.API
 open Matcher
-open Railway
+open GemGame.Railway
+
 
 
 [<Fact>]
